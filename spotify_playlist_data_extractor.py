@@ -1,10 +1,14 @@
 # Import required libraries
+import os
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import pandas as pd
 
-# Set up Spotify API credentials
-client_credentials_manager = SpotifyClientCredentials(client_id="e498e08d31f74a7eaf2c4b77ff34047e", client_secret="8901da616d8f42eba372f170e0336262")
+# Set up Spotify API credentials using environment variables
+client_credentials_manager = SpotifyClientCredentials(
+    client_id=os.getenv('SPOTIPY_CLIENT_ID'),
+    client_secret=os.getenv('SPOTIPY_CLIENT_SECRET')
+)
 
 # Create Spotify object to interact with the API
 sp = spotipy.Spotify(client_credentials_manager = client_credentials_manager)
@@ -33,12 +37,14 @@ for row in tracks['items']:
 
 # Extract artist information
 artist_list = []
-for row in tracks['items']:
-    for key, value in row.items():
-        if key == "track":
-            for artist in value['artists']:
-                artist_dict = {'artist_id' :artist['id'], 'artist_name' :artist['name'], 'external_url' :artist['href']}
-                artist_list.append(artist_dict)
+for item in tracks['items']:
+    for artist in item['track']['artists']:
+        artist_dict = {
+            'artist_id': artist['id'],
+            'artist_name': artist['name'],
+            'external_url': artist['external_urls']['spotify']
+        }
+        artist_list.append(artist_dict)
 
 # Extract song information
 song_list = []
@@ -73,6 +79,6 @@ album_df['release_date'] = pd.to_datetime(album_df['release_date'])
 song_df['song_added'] = pd.to_datetime(song_df['song_added'])
 
 # Uncomment the following line to display the first few rows of the DataFrame
-print(song_df)
+print(artist_df)
 
 # Note: Tutorial stopped at end of Video 1
