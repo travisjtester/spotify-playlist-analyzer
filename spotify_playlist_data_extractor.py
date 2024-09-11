@@ -13,6 +13,20 @@ client_credentials_manager = SpotifyClientCredentials(
 # Create Spotify object to interact with the API
 sp = spotipy.Spotify(client_credentials_manager = client_credentials_manager)
 
+# Extract playlist metadata info
+def get_playlist_metadata(sp, playlist_id):
+    playlist = sp.playlist(playlist_id)
+    return {
+        'name': playlist['name'],
+        'description': playlist['description'],
+        'followers': playlist['followers']['total'],
+        'total_tracks': playlist['tracks']['total'],
+        'owner': playlist['owner']['display_name'],
+        'public': playlist['public'],
+        'collaborative': playlist['collaborative'],
+        'snapshot_id': playlist['snapshot_id']
+    }
+
 # Extract album info from a track
 def extract_album_info(track):
     album = track['album']
@@ -60,6 +74,10 @@ def main():
     playlist_link = "https://open.spotify.com/playlist/37i9dQZF1DWYMokBiQj5qF?si=6c0ca7db899c47cd"
     playlist_id = playlist_link.split("/")[-1].split('?')[0]
 
+    # Get playlist metadata
+    playlist_metadata = get_playlist_metadata(sp,playlist_id)
+    playlist_df = pd.DataFrame([playlist_metadata])
+
     # Fetch tracks from the playlist
     tracks = get_playlist_tracks(sp, playlist_id)
 
@@ -81,6 +99,7 @@ def main():
     print(album_df.head())
     print(artist_df.head())
     print(song_df.head())
+    print(playlist_df)
 
     # Here you would call the functions to get playlist metadata and genre info
     # And then the functions to get additional artist and album details
