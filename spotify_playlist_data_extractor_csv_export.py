@@ -4,10 +4,6 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy.cache_handler import CacheFileHandler
 import pandas as pd
-import logging
-
-# Set up logging
-logging.basicConfig(level=logging.INFO)
 
 # Set up a custom cache handler
 cache_handler = CacheFileHandler(cache_path='.spotify_cache')
@@ -134,7 +130,11 @@ def main():
 
     # Extract information
     album_list = [extract_album_info(item['track']) for item in tracks]
-    artist_list = [extract_artist_info(artist) for item in tracks for artist in item['track']['artists']]
+    artist_list = [
+        extract_artist_info(artist)
+        for item in tracks
+        for artist in item['track']['artists']
+    ]
     song_list = [extract_song_info(item) for item in tracks]
     playlist_metadata = extract_playlist_metadata(sp,playlist_id)
 
@@ -148,16 +148,18 @@ def main():
     album_df['release_date'] = pd.to_datetime(album_df['release_date'])
     song_df['song_added'] = pd.to_datetime(song_df['song_added'])
 
-    # Print DataFrames (for debugging)
-    print(album_df.head())
-    print(artist_df.head())
-    print(song_df.head())
-    print(playlist_df)
+    # Get the path to the users desktop
+    desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
+    
+    # Save DataFrames to CSV files on the desktop
+    album_df.to_csv(os.path.join(desktop_path, "playlist_albums.csv"), index=False)
+    artist_df.to_csv(os.path.join(desktop_path, "playlist_artists.csv"), index=False)
+    song_df.to_csv(os.path.join(desktop_path, "playlist_songs.csv"), index=False)
+    playlist_df.to_csv(os.path.join(desktop_path, "playlist_metadata.csv"), index=False)
 
-    # Here you would call the functions to get playlist metadata and genre info
-    # And then the functions to get additional artist and album details
+    print("CSV files have been saved to your desktop, Boopz.")
 
-    # Note: Tutorial stopped at end of Video 1; End of Day 3
 
+    
 if __name__ == "__main__":
     main()
