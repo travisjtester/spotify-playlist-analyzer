@@ -157,9 +157,7 @@ def main():
     song_df.to_csv(os.path.join(desktop_path, "playlist_songs.csv"), index=False)
     playlist_df.to_csv(os.path.join(desktop_path, "playlist_metadata.csv"), index=False)
 
-    print("CSV files have been saved to your desktop, Boopz.")
-
-
+    print("CSV files have been saved to your desktop, Boopz!")
     
 if __name__ == "__main__":
     main()
